@@ -13,7 +13,7 @@ Agent skills for building and migrating Discord bots with [Seyfert](https://www.
 **Claude Code plugin**
 
 ```
-/plugin marketplace add <owner>/seyfert-skills
+/plugin marketplace add zeing/seyfert-skills
 /plugin install seyfert@seyfert-skills
 ```
 
