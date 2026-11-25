@@ -17,7 +17,17 @@ Agent skills for building and migrating Discord bots with [Seyfert](https://www.
 /plugin install seyfert@seyfert-skills
 ```
 
-**Other agents (Codex, GitHub Copilot, Cursor, Gemini CLI, …)**
+**Any agent, one command** ([`skills` CLI](https://github.com/vercel-labs/skills), installs into Codex, Cursor, Gemini CLI, Copilot, OpenCode and many more):
+
+```bash
+npx skills add zeing/seyfert-skills            # pick agents interactively
+npx skills add zeing/seyfert-skills -a codex -a cursor -a gemini-cli -y
+npx skills add zeing/seyfert-skills -g         # user-level instead of the project
+```
+
+`skills.sh.json` points the CLI at `plugins/seyfert/skills/`.
+
+**Manual install for other agents (Codex, GitHub Copilot, Cursor, Gemini CLI, …)**
 
 The skill uses the open [Agent Skills](https://agentskills.io) format: a folder with a `SKILL.md` (YAML frontmatter + Markdown) plus `references/` and `assets/`. Copy or symlink the whole folder, not just `SKILL.md`. The references are loaded on demand.
 
