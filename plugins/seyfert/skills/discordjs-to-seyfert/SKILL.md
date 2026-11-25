@@ -44,6 +44,7 @@ rg -n "from ['\"](winston|pino|bunyan|log4js|consola|signale)['\"]|createLogger\
 rg -n "\.put\(Routes\.application|commands\.set\(|application\.commands" src
 ```
 
+- discord.js family packages imported directly (`@discordjs/*`, `discord-api-types`) and bare imports that only resolve through discord.js: see `references/packages.md` → Inventory.
 - For every event, command, component handler, job, and startup function: one line on what it does and what it needs (gateway cache? REST only? DB?).
 - Note anything that reads messages from other bots, `messageUpdate` old/new comparisons, reaction handlers on uncached messages, and long-lived timers.
 
@@ -81,7 +82,7 @@ Create a branch (e.g. `migrate/seyfert`). Phases in order, each one gated:
 5. **Components** - collectors and `ComponentCommand`s per C5; global customId routers are removed. → `references/components.md`
 6. **Builders and remaining discord.js calls** - embeds, rows, attachments, cache access. → `references/builders.md`, `references/cache-and-fetch.md`
 7. **REST / webhooks / jobs** - per C7. → `references/rest-webhooks.md`
-8. **Remove discord.js** - uninstall `discord.js` and `@discordjs/*`. Then `rg "discord\.js"` must return nothing in `src`. Keep `discord-api-types` only if code still imports it directly; Seyfert re-exports API types from `seyfert/lib/types`.
+8. **Remove discord.js** - give every package from the inventory its replacement (`references/packages.md`), then uninstall `discord.js`, `@discordjs/*` and `discord-api-types`. Then `rg "discord\.js"` must return nothing in `src`. Keep `discord-api-types` only if code still imports it directly; Seyfert re-exports API types from `seyfert/lib/types`.
 
 Per-phase rule: Large phases (events, commands, builders) may be split into batches, but the gate still applies per batch.
 
@@ -112,6 +113,7 @@ Read `references/gotchas.md` before Step 4 and again before hand-over.
 - `references/components.md` - collectors vs `ComponentCommand`, modals
 - `references/builders.md` - EmbedBuilder → Embed, and the rest
 - `references/cache-and-fetch.md` - cache config, `.cache` replacements, fetching
+- `references/packages.md` - `@discordjs/*` sub-packages, `discord-api-types`, transitive deps: inventory and replacements
 - `references/rest-webhooks.md` - shorters, `client.proxy`, webhooks, threads
 - `references/gotchas.md` - behavior differences that break silently
 - `assets/migration-plan-template.md` - the `SEYFERT_MIGRATION.md` template
