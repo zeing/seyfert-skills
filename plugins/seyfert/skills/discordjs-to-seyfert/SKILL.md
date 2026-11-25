@@ -82,6 +82,12 @@ Create a branch (e.g. `migrate/seyfert`). Phases in order, each one gated:
 
 Per-phase rule: Large phases (events, commands, builders) may be split into batches, but the gate still applies per batch.
 
+**Keeping every commit green in a big codebase.** Events, utils and commands call each other, so at some point one side is converted and the other is not.
+- Add a temporary bridge, `legacy(x): any`, in one file. Wrap every call that crosses the Seyfert↔discord.js boundary with it. `rg "legacy\("` then counts the remaining work, and so do the `no-unsafe-argument` lint warnings. Delete the bridge in phase 8.
+- For a shared helper module that both converted and unconverted code use (for example `utils/discord.ts` or pagination), copy the discord.js version to `legacy-<name>.ts` and sed the unconverted importers to it. Rewrite the original for Seyfert. Delete the copy once its last importer is converted.
+- Convert in order: events → core helpers → feature groups (one commit each) → commands → components → REST. Move a helper up the order when a phase cannot typecheck without it. In practice the webhook module and pagination had to move early.
+- A mechanical converter (import splitting, builder renames, `iconURL` → `iconUrl`) saves time. See gotcha #40 before trusting it.
+
 ### Step 5 - Verify and hand over
 
 - Gates (every phase): the project's typecheck (`tsc --noEmit` or equivalent) passes, and the lint passes if the project has one.

@@ -40,6 +40,20 @@ Read this before migrating and again before hand-over. Each item was checked in 
 25. `user.tag` has no `#0` suffix in v6. Prefer `user.username`.
 26. `member.moderatable()` checks `ModerateMembers` in v6.
 
+## Found while migrating a real bot (Seyfert 6.0.0)
+29. **The client's `allowedMentions` is applied to every body Seyfert builds**, including `client.webhooks.writeMessage` and `messages.write` (`transformMessageBody`). A discord.js `WebhookClient` had no client defaults. Set `allowed_mentions` explicitly on webhook sends to keep the old pings.
+30. **There is no reaction collector** (`awaitReactions`/`createReactionCollector`). Keep a small waiter registry that your `messageReactionAdd` event feeds *before* any event-level filtering. discord.js collectors saw every reaction.
+31. `messageUpdate`'s first tuple item is typed `OmitInsert<MessageStructure, 'tts', …>`. It is a `Message` at runtime, so cast it once in the event (`as unknown as MessageStructure`).
+32. Discord still sends the deprecated message `interaction` field (`name`, `user`), and Seyfert copies it onto the structure, but its types omit it. Read it through one typed accessor.
+33. Threads: discord.js `thread.locked` / `thread.archived` become `thread.threadMetadata?.locked` / `.archived`.
+34. `StringSelectMenu.setValuesLength({ max })` also sets `min` to `undefined`. Port `setMaxValues(n)` as `setValuesLength({ min: menu.data.min_values, max: n })`.
+35. REST errors are `SeyfertError`. The Discord JSON code is at `error.metadata.response.code`, where discord.js had `DiscordAPIError.code`.
+36. discord.js `role.members` and `channel.messages.cache` are **cache-only** views. Port them to cache reads (`client.cache.members.values(guildId)`, `client.cache.messages.values(channelId)`), not REST, to keep the semantics.
+37. `members.fetch({ query, limit })` (a gateway query) maps to `client.members.search(guildId, { query, limit }, true)`. Without `true`, Seyfert may answer from cache.
+38. discord.js `member.roles.remove([...ids])` PATCHes the full role list from cache, so successive calls can re-add roles. Prefer one `DELETE` per owned role through `client.proxy...roles(id).delete({ reason })`, which also keeps the audit reason that the shorters drop.
+39. Rebuild received components and embeds with `component.toBuilder()` / `embed.toBuilder()`. Container builder methods are `setColor` and `addComponents`, not `setAccentColor` or `addTextDisplayComponents`. The separator enum is `Spacing`.
+40. **Automated renames corrupt string literals.** A regex `Message` → `MessageStructure` also rewrote log and embed text ("Game Message Error"). Rename types only in type positions, then grep the diff for structure names inside quotes.
+
 ## Runtime
 27. Verified working: Bun 1.4 + TypeScript 7.0 (native) typecheck with `moduleResolution: Bundler` and `locations.base: 'src'`. For Node + `tsc` emit, set `base: 'dist'` and make sure `seyfert.config.mjs` is resolvable from the cwd.
 28. `HandleCommand` is not exported from the `seyfert` root in 6.0.0. Import it from `seyfert/lib/commands/handle`.
