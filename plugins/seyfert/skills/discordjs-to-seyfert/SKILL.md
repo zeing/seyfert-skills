@@ -40,6 +40,7 @@ rg -n "WebhookClient|\.createWebhook|REST\(|Routes\." src
 rg -n "Events\.[A-Za-z]+|client\.on\(|client\.once\(" src
 rg -n "\.partial\b|Partials\." src
 rg -n "setTimeout|setInterval|CronJob|new Worker\(|new Queue\(" src
+rg -n "from ['\"](winston|pino|bunyan|log4js|consola|signale)['\"]|createLogger\(|new Logger\(" src
 rg -n "\.put\(Routes\.application|commands\.set\(|application\.commands" src
 ```
 
@@ -60,6 +61,7 @@ Ask all checkpoints whose answers do not depend on each other in one round. Numb
 | C6 | **Cache policy**: which resources to cache, and limits (replaces `makeCache` + sweepers). Is `messageUpdate` "old message" needed? It only exists when the message is cached. | Always | `references/cache-and-fetch.md` |
 | C7 | **REST / webhooks**: migrate `@discordjs/rest` / `WebhookClient` usage to Seyfert shorters and `client.proxy` now, or keep it as a later phase? | If found | `references/rest-webhooks.md` |
 | C8 | **Out-of-scope features** found in inventory (sharding, HTTP mode, voice, i18n). | If found | Seyfert docs |
+| C10 | **Logger**: keep the existing logger library (winston/pino/…, incl. custom transports such as a Discord webhook), or move to Seyfert's built-in `Logger`? Seyfert's has no transports. A webhook needs a `Logger.customize` hook, and it also routes Seyfert's own warnings. Default: keep the existing one and do the switch as a separate change after the migration. | If a logger library exists | `references/lifecycle.md` |
 | C9 | **Anything ambiguous** that you found: a function whose purpose or dependencies you cannot tell from the code. Quote file:line, say what you think it does, ask "is this right?". | Whenever | - |
 
 Do not proceed to Step 3 until every applicable checkpoint is answered.

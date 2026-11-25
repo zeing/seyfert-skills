@@ -102,6 +102,35 @@ export default createEvent({
 - A function that sets `setTimeout` timers from persisted state (for example "remove a role at time T") is restore-on-boot logic. It belongs in `botReady`. Ask (C9) whether the live trigger that originally sets those timers still exists.
 - Functions that used to take `client: Client` from discord.js now take `UsingClient` (`import type { UsingClient } from 'seyfert'`) or import the singleton `client`.
 
+## Logger (checkpoint C10)
+
+Seyfert's `Logger` (`client.logger`, `seyfert` export `Logger`, `LogLevels`) supports:
+- console output
+- `saveOnFile`
+- one global hook: `Logger.customize((self, level, args) => args | undefined)`
+
+It has **no transports**, and no `verbose`/`http`/`silly` levels (Debug, Info, Warn, Error, Fatal only).
+
+**Keep the existing logger (default).** It is independent of discord.js: only switch its imports (e.g. a webhook transport that used `WebhookClient` → a Seyfert webhook send, gotcha 29). Seyfert's own warnings (e.g. `<cmd> command does not have 'run' callback`) then still go only to the console.
+
+**Switch to Seyfert's `Logger`.** Wrap the default formatter and send webhooks as a side effect:
+
+```ts
+import { Logger, LogLevels } from 'seyfert'
+
+const base = Logger.getCustomizer()
+Logger.customize((self, level, args) => {
+  if (level >= LogLevels.Warn && !isDev) void sendLogWebhook(level, args).catch(() => null) // never throw here
+  return base(self, level, args) // keep Seyfert's console format
+})
+```
+
+Before switching, check:
+- **Call shape.** Winston-style calls (`logger.error('msg', { error, ...meta })`) must still render the same in the log channel. Parse the meta object out of `args`.
+- **Volume.** The hook is global (every `Logger` instance, including Seyfert's), so filter levels and environments.
+- **Call sites.** Keep a module exporting the same `logger.error/warn/info/debug` names so they do not change.
+- **Scope.** Do it as its own change after the migration is merged. It touches every log line, not the discord.js removal.
+
 ## Loaders
 
 Delete hand-written `readdir` + `import()` loaders for commands and events. `client.start()` loads `locations.*`. Hot reload: `client.commands.reloadAll()` (v6 throws on a bad file).

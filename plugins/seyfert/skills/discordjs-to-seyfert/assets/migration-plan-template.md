@@ -49,6 +49,7 @@
 | C7 | REST / webhooks timing | | |
 | C8 | Out-of-scope features | | |
 | C9 | Clarifications | | |
+| C10 | Logger (keep existing / Seyfert `Logger`) | | |
 
 ## Phases
 
