@@ -17,6 +17,7 @@ Out of scope for this skill (point the user at the docs instead): HTTP interacti
 4. **Big-bang on a branch.** Work on a new branch. The old discord.js commit is the rollback. Do not run discord.js and Seyfert gateway clients on the same token at the same time (duplicate event handling, split caches).
 5. **Gate every phase.** A phase is done when the project typechecks and every file migrated in that phase loads (see "Verification"). Tick it in `SEYFERT_MIGRATION.md` before starting the next.
 6. Follow the target repo's own conventions (CLAUDE.md, lint, path aliases, error-handling style) over the examples here.
+7. **Comments explain why, not what it used to be.** Do not write mapping comments like `// discord.js guild.roles.cache` or `// was the global customId router`. After the merge discord.js is gone, so they become noise. The old ↔ new mapping lives in the PR diff and `SEYFERT_MIGRATION.md`. Do comment constraints a future reader could "simplify" away, stated without the old API: e.g. `// The API ignores position on create: create, then move`, `// cache only, no fetch`, `// explicit so the client default allowedMentions is not applied`.
 
 ## Workflow
 
@@ -93,6 +94,10 @@ Per-phase rule: Large phases (events, commands, builders) may be split into batc
 - Gates (every phase): the project's typecheck (`tsc --noEmit` or equivalent) passes, and the lint passes if the project has one.
 - Load check: a throwaway script imports `client` and calls `await client.loadCommands()`, `loadEvents()` and `loadComponents()` without `start()`. Every file must load with no errors. Delete the script afterwards.
 - Smoke test (human, dev bot token, dev guild): walk the smoke checklist in `SEYFERT_MIGRATION.md`. Never use the production token for this.
+  Typecheck and load check cannot catch interaction routing (guild `guildId`, customId filters, collectors). Only a real click or command does, so every slash command and every persistent button needs one live try.
+- Before uninstalling discord.js, list bare imports that are not in `package.json` (packages that only resolved through discord.js, e.g. `lodash`). See gotcha 47.
+- Comment pass: `git diff <base> -- src | grep -E '^\+\s*(//|\*)' | grep -iE 'discord\.js|was |old '`. Remove mapping-only comments, reword the ones that carry a reason (rule 7). Verify it is comment-only: with comment lines stripped, every changed file must equal HEAD.
+- Hand over as a **draft PR** while the human keeps testing. Expect the line count to stay about the same: helpers replace discord.js conveniences (`role.members`, `awaitReactions`, overwrite merge, mention formatters). The win is the dependency tree and removing hand-written routers and loaders, not fewer lines.
 - Report: what changed, what passed, the items still unchecked, the found issues, and the rollback (redeploy the last discord.js commit).
 
 Read `references/gotchas.md` before Step 4 and again before hand-over.
