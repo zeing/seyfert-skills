@@ -17,18 +17,49 @@ Agent skills for building and migrating Discord bots with [Seyfert](https://www.
 /plugin install seyfert@seyfert-skills
 ```
 
-**Manual (any agent)**: copy or symlink the skill directory into your agent's skills folder:
+**Other agents (Codex, GitHub Copilot, Cursor, Gemini CLI, …)**
+
+The skill uses the open [Agent Skills](https://agentskills.io) format: a folder with a `SKILL.md` (YAML frontmatter + Markdown) plus `references/` and `assets/`. Copy or symlink the whole folder, not just `SKILL.md`. The references are loaded on demand.
 
 ```bash
-ln -s "$PWD/plugins/seyfert/skills/discordjs-to-seyfert" ~/.claude/skills/discordjs-to-seyfert
+SKILL="$PWD/plugins/seyfert/skills/discordjs-to-seyfert"
+
+# Shared cross-agent location, read by several tools (project-level, inside the bot repo)
+mkdir -p .agents/skills && ln -s "$SKILL" .agents/skills/discordjs-to-seyfert
+
+# Claude Code (personal)
+ln -s "$SKILL" ~/.claude/skills/discordjs-to-seyfert
 ```
+
+Skill folders differ per tool and change between releases. Check your tool's docs for the current path. Commonly cited locations:
+
+| Tool | Project | Personal |
+|---|---|---|
+| Claude Code | `.claude/skills/` | `~/.claude/skills/` |
+| GitHub Copilot / VS Code | `.github/skills/`, `.agents/skills/` | `~/.copilot/skills/` |
+| Cursor | `.cursor/skills/`, `.agents/skills/` | — |
+| OpenAI Codex | `.agents/skills/` (older docs: `.codex/skills/`) | `~/.agents/skills/` or `~/.codex/skills/` |
+| Gemini CLI | `.gemini/skills/`, `.agents/skills/` | `~/.gemini/skills/` |
+
+**Agents without skill support**: point them at the file from the repo's `AGENTS.md` (or the tool's rules file):
+
+```markdown
+## discord.js → Seyfert migration
+When asked to migrate this bot from discord.js to Seyfert, read and follow
+`<path>/discordjs-to-seyfert/SKILL.md`. Open files under its `references/` when SKILL.md points to them.
+Stop at every checkpoint (C1–C10) and wait for my answer.
+```
+
+The `.claude-plugin/` manifests only matter to Claude Code. Other tools ignore them.
+
+**Tested with**: Claude Code (a real migration, juice-box-bot). Other agents should work through the standard format but are not tested yet. Reports are welcome.
 
 ## Usage
 
 In the bot repository, ask: *"Migrate this bot from discord.js to Seyfert"*. The skill will:
 
 1. inventory discord.js usage (read-only)
-2. ask checkpoint questions: where startup code goes, whether the application id is shared (it never bulk-overwrites a shared one), prefix arg parsing, cooldowns and permissions, collector vs `ComponentCommand`, cache policy, REST and webhooks
+2. ask checkpoint questions: where startup code goes, whether the application id is shared (it never bulk-overwrites a shared one), prefix arg parsing, cooldowns and permissions, collector vs `ComponentCommand`, cache policy, REST and webhooks, logger
 3. write `SEYFERT_MIGRATION.md` in your repo
 4. migrate on a branch, phase by phase
 
