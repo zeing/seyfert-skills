@@ -57,7 +57,7 @@ Skill folders differ per tool and change between releases. Check your tool's doc
 ## discord.js → Seyfert migration
 When asked to migrate this bot from discord.js to Seyfert, read and follow
 `<path>/discordjs-to-seyfert/SKILL.md`. Open files under its `references/` when SKILL.md points to them.
-Stop at every checkpoint (C1–C10) and wait for my answer.
+Stop at every checkpoint (C1–C11) and wait for my answer.
 ```
 
 The `.claude-plugin/` manifests only matter to Claude Code. Other tools ignore them.
@@ -69,7 +69,7 @@ The `.claude-plugin/` manifests only matter to Claude Code. Other tools ignore t
 In the bot repository, ask: *"Migrate this bot from discord.js to Seyfert"*. The skill will:
 
 1. inventory discord.js usage (read-only)
-2. ask checkpoint questions: where startup code goes, whether the application id is shared (it never bulk-overwrites a shared one), prefix arg parsing, cooldowns and permissions, collector vs `ComponentCommand`, cache policy, REST and webhooks, logger
+2. ask checkpoint questions: where startup code goes, whether the application id is shared (it never bulk-overwrites a shared one), prefix arg parsing, cooldowns and permissions, collector vs `ComponentCommand`, cache policy, REST and webhooks, logger, Seyfert plugins
 3. write `SEYFERT_MIGRATION.md` in your repo
 4. migrate on a branch, phase by phase
 

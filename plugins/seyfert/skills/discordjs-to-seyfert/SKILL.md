@@ -46,6 +46,7 @@ rg -n "from ['\"](winston|pino|bunyan|log4js|consola|signale)['\"]|createLogger\
 rg -n "\.put\(Routes\.application|commands\.set\(|application\.commands" src
 ```
 
+- Libraries and subsystems that have a Seyfert plugin (logger, scheduler, queues, cache, tests): see `references/plugins.md` → Inventory.
 - discord.js family packages imported directly (`@discordjs/*`, `discord-api-types`) and bare imports that only resolve through discord.js: see `references/packages.md` → Inventory.
 - For every event, command, component handler, job, and startup function: one line on what it does and what it needs (gateway cache? REST only? DB?).
 - Note anything that reads messages from other bots, `messageUpdate` old/new comparisons, reaction handlers on uncached messages, and long-lived timers.
@@ -65,6 +66,7 @@ Ask all checkpoints whose answers do not depend on each other in one round. Numb
 | C7 | **REST / webhooks**: migrate `@discordjs/rest` / `WebhookClient` usage to Seyfert shorters and `client.proxy` now, or keep it as a later phase? | If found | `references/rest-webhooks.md` |
 | C8 | **Out-of-scope features** found in inventory (sharding, HTTP mode, voice, i18n). | If found | Seyfert docs |
 | C10 | **Logger**: keep the existing logger library (winston/pino/…, incl. custom transports such as a Discord webhook), or move to Seyfert's built-in `Logger`? Seyfert's has no transports. A webhook needs a `Logger.customize` hook, and it also routes Seyfert's own warnings. Default: keep the existing one and do the switch as a separate change after the migration. | If a logger library exists | `references/lifecycle.md` |
+| C11 | **Seyfert plugins**: for each existing library or hand-written subsystem (logger, cron/scheduler, queues, cache adapter, tests, cooldown), keep it or move to the official `@slipher/*` plugin? Default: keep, except `@slipher/cooldown` under C4. Move the rest after the migration is merged. Do not write your own plugin until a second bot needs the same helpers. | If any mapped library or subsystem exists | `references/plugins.md` |
 | C9 | **Anything ambiguous** that you found: a function whose purpose or dependencies you cannot tell from the code. Quote file:line, say what you think it does, ask "is this right?". | Whenever | - |
 
 Do not proceed to Step 3 until every applicable checkpoint is answered.
@@ -116,6 +118,7 @@ Read `references/gotchas.md` before Step 4 and again before hand-over.
 - `references/builders.md` - EmbedBuilder → Embed, and the rest
 - `references/cache-and-fetch.md` - cache config, `.cache` replacements, fetching
 - `references/packages.md` - `@discordjs/*` sub-packages, `discord-api-types`, transitive deps: inventory and replacements
+- `references/plugins.md` - official `@slipher/*` plugins vs existing libraries (checkpoint C11), and when to write your own
 - `references/rest-webhooks.md` - shorters, `client.proxy`, webhooks, threads
 - `references/gotchas.md` - behavior differences that break silently
 - `assets/migration-plan-template.md` - the `SEYFERT_MIGRATION.md` template

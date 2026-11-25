@@ -52,6 +52,7 @@
 | C8 | Out-of-scope features | | PENDING | |
 | C9 | Clarifications | | PENDING | |
 | C10 | Logger (keep existing / Seyfert `Logger`) | | PENDING | |
+| C11 | Seyfert plugins (per library: keep / `@slipher/*` now / later) | | PENDING | |
 
 ## Phases
 

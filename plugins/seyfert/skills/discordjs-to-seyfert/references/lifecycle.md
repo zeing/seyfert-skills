@@ -111,6 +111,8 @@ Seyfert's `Logger` (`client.logger`, `seyfert` export `Logger`, `LogLevels`) sup
 
 It has **no transports**, and no `verbose`/`http`/`silly` levels (Debug, Info, Warn, Error, Fatal only).
 
+**Official plugin option:** `@slipher/logger` (custom transports through `LoggerAdapter`). See `plugins.md`.
+
 **Keep the existing logger (default).** It is independent of discord.js: only switch its imports (e.g. a webhook transport that used `WebhookClient` → a Seyfert webhook send, gotcha 29). Seyfert's own warnings (e.g. `<cmd> command does not have 'run' callback`) then still go only to the console.
 
 **Switch to Seyfert's `Logger`.** Wrap the default formatter and send webhooks as a side effect:
