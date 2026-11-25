@@ -38,18 +38,20 @@
 
 ## Decisions
 
-| # | Question | Answer | Date |
-|---|---|---|---|
-| C1 | Startup placement | | |
-| C2 | Application id shared? Registration method | | |
-| C3 | Prefix commands + args parsing | | |
-| C4 | Cooldowns / permissions | | |
-| C5 | Component kinds | see table above | |
-| C6 | Cache policy | | |
-| C7 | REST / webhooks timing | | |
-| C8 | Out-of-scope features | | |
-| C9 | Clarifications | | |
-| C10 | Logger (keep existing / Seyfert `Logger`) | | |
+<!-- Status: ANSWERED (by a human) or PENDING (recommended answer only; an agent must not act on it). -->
+
+| # | Question | Answer | Status | Date |
+|---|---|---|---|---|
+| C1 | Startup placement | | PENDING | |
+| C2 | Application id shared? Registration method | | PENDING | |
+| C3 | Prefix commands + args parsing | | PENDING | |
+| C4 | Cooldowns / permissions | | PENDING | |
+| C5 | Component kinds | see table above | PENDING | |
+| C6 | Cache policy | | PENDING | |
+| C7 | REST / webhooks timing | | PENDING | |
+| C8 | Out-of-scope features | | PENDING | |
+| C9 | Clarifications | | PENDING | |
+| C10 | Logger (keep existing / Seyfert `Logger`) | | PENDING | |
 
 ## Phases
 

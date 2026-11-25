@@ -63,6 +63,8 @@ In the bot repository, ask: *"Migrate this bot from discord.js to Seyfert"*. The
 3. write `SEYFERT_MIGRATION.md` in your repo
 4. migrate on a branch, phase by phase
 
+**Headless runs** (no one to answer, e.g. `codex exec`, CI): the agent stops after writing `SEYFERT_MIGRATION.md` with recommended answers marked `PENDING`. Fill in the Decisions table, set each row to `ANSWERED`, and run it again. The second run migrates.
+
 ## Scope and verification
 
 - Targets **Seyfert 6.x** from **discord.js 14.x**, for a single-process gateway bot.

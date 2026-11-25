@@ -12,6 +12,8 @@ Out of scope for this skill (point the user at the docs instead): HTTP interacti
 ## Ground rules
 
 1. **Never guess a checkpoint answer.** Each checkpoint below is a question for the human. Ask, wait, record the answer in `SEYFERT_MIGRATION.md`, then act.
+   - **No human to answer** (headless or CI run, e.g. `codex exec`, `gemini -p`, a background agent): do Step 1 and Step 3 only. Write every checkpoint into `SEYFERT_MIGRATION.md` with your recommended answer and the status `PENDING`, then stop without changing code. A `PENDING` row is not an answer.
+   - **Answers already in the file**: if `SEYFERT_MIGRATION.md` exists and a checkpoint row has a human answer (status not `PENDING`), use it instead of asking. Start Step 4 only when no applicable row is `PENDING`.
 2. **Verify API before use.** The mappings in `references/` were checked against Seyfert 6.0.0. Check the installed version first (`node_modules/seyfert/package.json`). If it is not 6.x, re-verify every API you touch against `node_modules/seyfert/lib/**/*.d.ts` or https://www.seyfert.dev/docs before writing code. The type definitions are the source of truth over the docs and over this skill.
 3. **Preserve behavior.** A migration is not a refactor. Keep customIds, prefixes, permission checks, message text and timings identical unless the human approves a change at a checkpoint. Bugs found on the way go into `SEYFERT_MIGRATION.md` → "Found issues"; do not fix them in the migration diff.
 4. **Big-bang on a branch.** Work on a new branch. The old discord.js commit is the rollback. Do not run discord.js and Seyfert gateway clients on the same token at the same time (duplicate event handling, split caches).
@@ -50,7 +52,7 @@ rg -n "\.put\(Routes\.application|commands\.set\(|application\.commands" src
 
 ### Step 2 - Checkpoints (ask the human)
 
-Ask all checkpoints whose answers do not depend on each other in one round. Number them and give a recommended answer with the reason. Record every answer under "Decisions".
+Ask all checkpoints whose answers do not depend on each other in one round. Number them and give a recommended answer with the reason. Record every answer under "Decisions" with status `ANSWERED`.
 
 | # | Checkpoint | When to ask | Reference |
 |---|---|---|---|
