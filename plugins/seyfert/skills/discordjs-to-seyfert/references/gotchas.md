@@ -54,6 +54,16 @@ Read this before migrating and again before hand-over. Each item was checked in 
 39. Rebuild received components and embeds with `component.toBuilder()` / `embed.toBuilder()`. Container builder methods are `setColor` and `addComponents`, not `setAccentColor` or `addTextDisplayComponents`. The separator enum is `Spacing`.
 40. **Automated renames corrupt string literals.** A regex `Message` → `MessageStructure` also rewrote log and embed text ("Game Message Error"). Rename types only in type positions, then grep the diff for structure names inside quotes.
 
+41. Interaction methods take flags/booleans, not discord.js option objects: `interaction.deferReply({ flags: Ephemeral })` → `interaction.deferReply(MessageFlags.Ephemeral)`; `CommandContext` / `ComponentContext` take `deferReply(true)`. `ComponentContext` has no `editResponse`: use `editOrReply`.
+42. Raw select options (`addOption({ label, value, emoji: '<:name:id>' })` objects) are sent as-is, so emoji strings are not parsed like discord.js did. Parse to `{ id, name }` first, and skip `setEmoji('')` (it throws).
+43. With `strictNullChecks: false` (common in old discord.js repos), `ctx.options` collapses to `never`. Read options through one cast (`ctx.options as { args?: string }`), not per access.
+44. `@slipher/cooldown`: object options of `@Middlewares` lose typing. To print the old cooldown text, call `client.cooldown.check({ name: ctx.fullCommandName, target, guildId })` in `onMiddlewaresError`. Use the **full** name: for subcommands, `ctx.command.name` does not resolve the parent's bucket.
+45. Roles: discord.js `roles.create({ position })` is a create **plus** `setPosition`, since the API ignores `position` on create. Port it as `client.roles.create` then `client.roles.editPositions`. `role.hexColor` / `role.iconURL()` have no Seyfert getters, and an icon URL must be sent as a data URI (`data:image/png;base64,…`).
+46. Editing a permission overwrite with `PUT .../permissions/:id` replaces it. discord.js `permissionOverwrites.edit` merged the new value into the existing allow/deny bits, so read and merge before the PUT.
+47. **Removing `discord.js` removes its transitive packages.** Code importing `lodash`, `undici` or `ws` that only resolved through discord.js breaks at runtime, not in `tsc` when types come from elsewhere. Before uninstalling, list bare imports that are not in `package.json`.
+48. `@discordjs/formatters` is not a drop-in for Seyfert `Formatter`: Seyfert has no mention helpers and orders `codeBlock` / `messageLink` arguments differently. Copy the few functions you use into a local module, and compare outputs against the package before removing it.
+49. A shell `&&` chain that greps for a just-written line stops silently when the formatter has re-wrapped it, so later files are never written and `tsc` still passes. Confirm new files exist in the load check (count commands and components).
+
 ## Runtime
 27. Verified working: Bun 1.4 + TypeScript 7.0 (native) typecheck with `moduleResolution: Bundler` and `locations.base: 'src'`. For Node + `tsc` emit, set `base: 'dist'` and make sure `seyfert.config.mjs` is resolvable from the cwd.
 28. `HandleCommand` is not exported from the `seyfert` root in 6.0.0. Import it from `seyfert/lib/commands/handle`.
