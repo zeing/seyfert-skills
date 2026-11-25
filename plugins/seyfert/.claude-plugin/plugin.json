@@ -1,0 +1,7 @@
+{
+  "name": "seyfert",
+  "version": "0.1.0",
+  "description": "Skills for Seyfert (https://www.seyfert.dev): migrate a discord.js bot to Seyfert v6.",
+  "author": { "name": "Zeing" },
+  "license": "MIT"
+}

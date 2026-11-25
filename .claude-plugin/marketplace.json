@@ -1,0 +1,14 @@
+{
+  "name": "seyfert-skills",
+  "owner": { "name": "Zeing" },
+  "metadata": {
+    "description": "Agent skills for building and migrating Discord bots with the Seyfert framework."
+  },
+  "plugins": [
+    {
+      "name": "seyfert",
+      "source": "./plugins/seyfert",
+      "description": "Skills for Seyfert (https://www.seyfert.dev): migrate a discord.js bot to Seyfert v6."
+    }
+  ]
+}
