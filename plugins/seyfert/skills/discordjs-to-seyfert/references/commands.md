@@ -62,7 +62,21 @@ new Client({
 ```
 
 - **Seyfert does not ignore bot authors** in prefix handling (`HandleCommand.message` has no `author.bot` check in 6.0.0). Return `[]` from `prefix` for bots, as above, or for whatever the old handler filtered (DMs, webhooks, specific channels).
-- Prefix matching is case-sensitive, and the command name comes from the first 1-3 words (to support subcommands).
+- Prefix and name matching is **case-sensitive**, and the command name comes from the first 1-3 words (to support subcommands). To keep case-insensitive behavior from an old handler:
+
+```ts
+// prefix: return the user's own spelling when it matches case-insensitively
+prefix: (m) => {
+  const head = m.content.slice(0, PREFIX.length)
+  return !m.author.bot && head.toLowerCase() === PREFIX ? [head] : []
+},
+
+// in the HandleCommand subclass: lowercase only the command word
+override resolveCommandFromContent(content: string, prefix: string, message: GatewayMessageCreateDispatchData) {
+  const [name = '', ...rest] = content.split(' ')
+  return super.resolveCommandFromContent([name.toLowerCase(), ...rest].join(' '), prefix, message)
+}
+```
 - The default `argsParser` expects flags: `!cmd -user @x -reason spam`. discord.js bots usually split on spaces into `args: string[]`. To keep that UX, subclass `HandleCommand` (import from `seyfert/lib/commands/handle`; it is not re-exported from `seyfert` in 6.0.0):
 
 ```ts

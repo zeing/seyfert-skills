@@ -34,7 +34,7 @@ export default config.bot({
 ```
 
 - Intents are string names of `GatewayIntentBits` (`'GuildMembers'`, `'GuildPresences'`, `'GuildMessageReactions'`, ...).
-- Each `locations` entry is a directory that Seyfert loads recursively. Every file must **default-export** a command class, a `createEvent(...)` result, or a component class. Move helpers out of these directories. The discord.js "skip files starting with `_`" trick does not apply.
+- Each `locations` entry is a directory that Seyfert loads recursively. Every file must **default-export** a command class, a `createEvent(...)` result, or a component class. Move helpers out of these directories, or keep a `_`-prefix skip convention by wrapping the handler `filter` (see `gotchas.md` #3).
 - `client.getRC()` reads the config at runtime.
 
 ## Client + typings

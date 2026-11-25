@@ -5,13 +5,15 @@ Read this before migrating and again before hand-over. Each item was checked in 
 ## Startup and loading
 1. **`ready` ≠ `ClientReady`.** `ready` fires per shard before guilds arrive. Use `botReady` with `once: true`.
 2. **Missing `experimentalDecorators` / `emitDecoratorMetadata`** → the build fails or commands lose metadata.
-3. **Every file under `locations.*` is imported**, including helpers and `*.test.ts`. Anything that does not default-export a command, event or component is logged as a warning or ignored. Keep helpers and tests out of these directories.
+3. **Every `.ts`/`.js` file under `locations.*` is imported** (only `.d.ts` is skipped), including helpers, `*.test.ts` and `_disabled.ts`. To keep a "skip files starting with `_`" convention, wrap the handler filter before `start()`: `const f = client.commands.filter; client.commands.filter = (p) => f(p) && !basename(p).startsWith('_')`. The same works for `client.events` and `client.components`. Verified in 6.0.0. Skipped files are still typechecked.
 4. **One handler per event name.** A second file for `messageCreate` silently replaces the first. Merge the listeners.
 5. **`client.uploadCommands()` bulk-overwrites** the application's commands. Commands registered by other code under the same application id get deleted. See checkpoint C2.
 
 ## Commands
 6. **Bots can trigger prefix commands.** Seyfert does not check `author.bot`. Filter in the `commands.prefix` callback.
 7. **Default prefix args are `-flag value`**, not space-split. Port with a custom `argsParser`.
+7a. **Prefix and command-name matching is case-sensitive.** Prefix matching is `content.startsWith(prefix)` and name matching is `name === raw || aliases.includes(raw)` (6.0.0). There is no option to change this. If the old bot lowercased input, have the `prefix` callback return the prefix exactly as the user typed it when it matches case-insensitively, and override `resolveCommandFromContent` to lowercase the first word (see `commands.md`).
+7b. Seyfert calls `trimStart()` after the prefix, so `! ping` runs `ping`. A discord.js handler that split on `' '` would not have run it.
 8. **Prefix permission checks are guild-level**, the owner bypasses them, and a failure is silent unless `onPermissionsFail` is defined. discord.js code often checked channel permissions.
 9. `ctx.message` exists only with `InternalOptions.withPrefix: true`, and only for prefix runs.
 10. Without `commands.reply: () => true`, `ctx.write` in a prefix command sends a plain channel message instead of a reply.
